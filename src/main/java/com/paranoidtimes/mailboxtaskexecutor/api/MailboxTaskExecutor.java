@@ -37,4 +37,18 @@ public interface MailboxTaskExecutor {
      * error.
      */
     void executeForEachEmail(EmailHandler emailHandler) throws MailBoxTaskExecutorException;
+    
+    /**
+     * This flag should indicate should seen e-mails also be retrieved.
+     * 
+     * @param retrieveSeenEmails boolean to set.
+     */
+    void setRetrieveSeenEmails(boolean retrieveSeenEmails);
+    
+    /**
+     * This flag should indicate if e-mail should bed deleted after processing.
+     * 
+     * @param deleteAfterRetrieval boolean to set.
+     */
+    void setDeleteAfterRetrieval(boolean deleteAfterRetrieval);
 }
