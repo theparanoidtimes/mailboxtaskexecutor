@@ -9,6 +9,9 @@ import java.util.List;
  */
 public class MailBoxTaskExecutorException extends Exception {
 
+    /**
+     * A list of e-mail processing exceptions.
+     */
     private List<Throwable> processingExceptions = null;
 
     /**
@@ -55,8 +58,9 @@ public class MailBoxTaskExecutorException extends Exception {
     }
 
     /**
+     * Returns the list of e-mail processing exceptions.
      *
-     * @return
+     * @return the list of e-mail processing exceptions.
      */
     public List<Throwable> getProcessingExceptions() {
         return processingExceptions;
