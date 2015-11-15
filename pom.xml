@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.paranoidtimes</groupId>
+    <artifactId>mailboxtaskexecutor</artifactId>
+    <version>0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>Mailbox Task Executor</name>
+    <description>
+        This library provides a collection of task that are executed against a e-mail mailbox.
+    </description>
+    <inceptionYear>2015</inceptionYear>
+    <developers>
+        <developer>
+            <id>28</id>
+            <name>Dejan Josifovic</name>
+            <email>www.paranoidtimes@gmail.com</email>
+            <organization>theparanoidtimes.com</organization>
+        </developer>
+    </developers>
+    <organization>
+        <name>theparanoidtimes.com</name>
+    </organization>
+    <licenses>
+        <license>
+            <name>GNU LESSER GENERAL PUBLIC LICENSE</name>
+            <distribution>jar</distribution>
+        </license>
+    </licenses>
+
+    <scm>
+        <developerConnection>scm:git:https://github.com/theparanoidtimes/mailboxtaskexecutor.git</developerConnection>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    
+    <distributionManagement>
+        <snapshotRepository>
+            <id>local-snapshots</id>
+            <name>Local Nexus snapshot repository</name>
+            <url>http://localhost:9876/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>local-releases</id>
+            <name>Local Nexus release repository</name>
+            <url>http://localhost:9876/nexus/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
+    
+    <dependencies>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4</version>
+        </dependency>
+    </dependencies>
+</project>
