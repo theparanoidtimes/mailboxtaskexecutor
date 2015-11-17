@@ -28,7 +28,7 @@
     <licenses>
         <license>
             <name>GNU LESSER GENERAL PUBLIC LICENSE</name>
-            <distribution>jar</distribution>
+            <distribution>repo</distribution>
         </license>
     </licenses>
 
