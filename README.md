@@ -2,7 +2,7 @@
 
 Version: 0.1.
 
-Mailbox Task Executor executes task against a e-mail mailbox.
+Mailbox Task Executor executes task against an e-mail mailbox.
 
 Currently API supports only three methods which are implemented only for IMAP
 protocol in ```ImapMailboxFolderTaskExecutor```. This implementation is IMAP
