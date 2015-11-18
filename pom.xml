@@ -6,7 +6,7 @@
 
     <groupId>com.paranoidtimes</groupId>
     <artifactId>mailboxtaskexecutor</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Mailbox Task Executor</name>
@@ -34,6 +34,7 @@
 
     <scm>
         <developerConnection>scm:git:https://github.com/theparanoidtimes/mailboxtaskexecutor.git</developerConnection>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
