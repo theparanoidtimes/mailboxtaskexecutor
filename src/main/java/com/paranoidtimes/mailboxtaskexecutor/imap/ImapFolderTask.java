@@ -8,7 +8,7 @@ import javax.mail.Folder;
  * @param <T> the return type of the task.
  * @author djosifovic
  */
-public interface ImapFolderTask<T> {
+interface ImapFolderTask<T> {
 
     /**
      * A task to be executed.
