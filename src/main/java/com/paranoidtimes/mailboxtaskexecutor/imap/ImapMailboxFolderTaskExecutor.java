@@ -97,7 +97,6 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     * <p>
      * Retrieves all e-mails or
      * <pre>batchSize</pre> of e-mails from the specified mailbox folder.
      *
@@ -141,9 +140,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     * <p>
      * Returns true if there are more e-mails in the folder, otherwise false.
-     * <p>
      * If
      * <pre>retrieveSeenEmails</pre> is set to true this task will count those
      * mails to.
@@ -168,7 +165,6 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     * <p>
      * Executes a passed
      * <pre>EmailHandler</pre> method on each e-mail in folder.
      *
@@ -386,7 +382,6 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     * <p>
      * Sets the
      * <pre>deleteAfterRetrieval</pre> flag.
      *
@@ -399,7 +394,6 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     * <p>
      * Sets the
      * <pre>retrieveSeenEmails</pre> flag.
      *
