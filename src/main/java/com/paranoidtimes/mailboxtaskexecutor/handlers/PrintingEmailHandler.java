@@ -1,4 +1,4 @@
-package com.paranoidtimes.mailboxtaskexecutor.imap;
+package com.paranoidtimes.mailboxtaskexecutor.handlers;
 
 import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
 
@@ -19,7 +19,7 @@ public class PrintingEmailHandler implements EmailHandler {
 
     /**
      * The
-     * <pre>PringStream</pre> to print e-mails to.
+     * <pre>PrintStream</pre> to print e-mails to.
      */
     private final PrintStream printStream;
 
