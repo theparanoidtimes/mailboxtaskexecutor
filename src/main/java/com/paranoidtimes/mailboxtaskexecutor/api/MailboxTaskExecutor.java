@@ -51,4 +51,13 @@ public interface MailboxTaskExecutor {
      * @param deleteAfterRetrieval boolean to set.
      */
     void setDeleteAfterRetrieval(boolean deleteAfterRetrieval);
+
+    /**
+     * Sets the current batch size. Batch size is the maximum number of emails
+     * to process in one task. Batch size value rules can be enforced (like must
+     * be greater than zero or similar).
+     *
+     * @param batchSize batch size to set.
+     */
+    void setBatchSize(int batchSize);
 }

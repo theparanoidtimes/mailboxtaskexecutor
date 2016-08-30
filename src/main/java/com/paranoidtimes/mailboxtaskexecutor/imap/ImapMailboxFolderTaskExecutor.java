@@ -368,11 +368,12 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     }
 
     /**
-     * Sets the current batch size. Batch size must be 0 or greater.
+     * {@inheritDoc}
+     * Zero size batch means all e-mails in mailbox.
      *
-     * @param batchSize batch size to set.
      * @throws IllegalArgumentException if batch size is less then 0.
      */
+    @Override
     public final void setBatchSize(int batchSize) {
         if (batchSize < 0) {
             throw new IllegalArgumentException("Batch size must be either zero or positive!");
