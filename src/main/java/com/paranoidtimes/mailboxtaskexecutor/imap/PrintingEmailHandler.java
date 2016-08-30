@@ -1,11 +1,12 @@
 package com.paranoidtimes.mailboxtaskexecutor.imap;
 
 import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
-import java.io.PrintStream;
-import java.util.Enumeration;
+
 import javax.mail.Header;
 import javax.mail.Message;
 import javax.mail.internet.MimeMultipart;
+import java.io.PrintStream;
+import java.util.Enumeration;
 
 /**
  * An example
@@ -58,7 +59,7 @@ public class PrintingEmailHandler implements EmailHandler {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Prints e-mail headers, that prints the content. If the content is
      * multipart, print every part.
      *

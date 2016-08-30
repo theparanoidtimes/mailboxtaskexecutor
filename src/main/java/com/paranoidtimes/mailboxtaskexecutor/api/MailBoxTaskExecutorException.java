@@ -27,7 +27,7 @@ public class MailBoxTaskExecutorException extends Exception {
      * A constructor with message and a cause exception.
      *
      * @param message a message describing the exception.
-     * @param cause a cause exception.
+     * @param cause   a cause exception.
      */
     public MailBoxTaskExecutorException(String message, Throwable cause) {
         super(message, cause);
@@ -36,7 +36,7 @@ public class MailBoxTaskExecutorException extends Exception {
     /**
      * A constructor with a message and a list of e-mail processing exceptions.
      *
-     * @param message a message describing the exception.
+     * @param message              a message describing the exception.
      * @param processingExceptions a list of e-mail processing exceptions.
      */
     public MailBoxTaskExecutorException(String message, List<Throwable> processingExceptions) {
@@ -48,8 +48,8 @@ public class MailBoxTaskExecutorException extends Exception {
      * A constructor with a message, cause exception and a list of e-mail
      * processing exceptions.
      *
-     * @param message a message describing the exception.
-     * @param cause a cause exception.
+     * @param message              a message describing the exception.
+     * @param cause                a cause exception.
      * @param processingExceptions a list of e-mail processing exceptions.
      */
     public MailBoxTaskExecutorException(String message, Throwable cause, List<Throwable> processingExceptions) {

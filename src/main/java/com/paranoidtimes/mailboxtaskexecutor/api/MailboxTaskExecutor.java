@@ -1,7 +1,7 @@
 package com.paranoidtimes.mailboxtaskexecutor.api;
 
-import java.util.List;
 import javax.mail.Message;
+import java.util.List;
 
 /**
  * The executor holds tasks that are executed on one (or even more) mailboxes.
@@ -25,7 +25,7 @@ public interface MailboxTaskExecutor {
      * @return true if there is more e-mail in the specified location, otherwise
      * false.
      * @throws MailBoxTaskExecutorException if executor can't execute the task
-     * do to an error.
+     *                                      do to an error.
      */
     boolean isThereRemainingEmails() throws MailBoxTaskExecutorException;
 
@@ -34,7 +34,7 @@ public interface MailboxTaskExecutor {
      *
      * @param emailHandler the handler for each e-mail.
      * @throws MailBoxTaskExecutorException if executor can't execute due to an
-     * error.
+     *                                      error.
      */
     void executeForEachEmail(EmailHandler emailHandler) throws MailBoxTaskExecutorException;
 

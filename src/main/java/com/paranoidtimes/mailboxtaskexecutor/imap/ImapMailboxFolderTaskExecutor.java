@@ -3,17 +3,14 @@ package com.paranoidtimes.mailboxtaskexecutor.imap;
 import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
 import com.paranoidtimes.mailboxtaskexecutor.api.MailBoxTaskExecutorException;
 import com.paranoidtimes.mailboxtaskexecutor.api.MailboxTaskExecutor;
+
+import javax.mail.*;
+import javax.mail.Flags.Flag;
+import javax.mail.internet.MimeMessage;
+import javax.mail.search.FlagTerm;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
-import javax.mail.Flags;
-import javax.mail.Flags.Flag;
-import javax.mail.Folder;
-import javax.mail.Message;
-import javax.mail.Session;
-import javax.mail.Store;
-import javax.mail.internet.MimeMessage;
-import javax.mail.search.FlagTerm;
 
 /**
  * A Mailbox Task Executor implementation for IMAP protocol mailboxes. This
@@ -87,9 +84,9 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      * <pre>ImapMailboxFolderTaskExecutor</pre> constructor.
      *
      * @param imapHostAddress the host address of the mailbox.
-     * @param username the username for the mailbox.
-     * @param password the password for the mailbox.
-     * @param folderName the folder name in which all tasks will be executed.
+     * @param username        the username for the mailbox.
+     * @param password        the password for the mailbox.
+     * @param folderName      the folder name in which all tasks will be executed.
      */
     public ImapMailboxFolderTaskExecutor(String imapHostAddress, String username, String password, String folderName) {
         this.imapHostAddress = imapHostAddress;
@@ -100,7 +97,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Retrieves all e-mails or
      * <pre>batchSize</pre> of e-mails from the specified mailbox folder.
      *
@@ -144,9 +141,9 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Returns true if there are more e-mails in the folder, otherwise false.
-     *
+     * <p>
      * If
      * <pre>retrieveSeenEmails</pre> is set to true this task will count those
      * mails to.
@@ -171,7 +168,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Executes a passed
      * <pre>EmailHandler</pre> method on each e-mail in folder.
      *
@@ -185,7 +182,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      *
      * @param emailHandler handler for each e-mail.
      * @throws MailBoxTaskExecutorException if some error happened during
-     * execution.
+     *                                      execution.
      */
     @Override
     public void executeForEachEmail(final EmailHandler emailHandler) throws MailBoxTaskExecutorException {
@@ -198,20 +195,21 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
                 int retrieveCount = getRetrieveCount(messages.length);
 
                 for (int i = 0; i < retrieveCount; i++) {
-                    if (messages[i].isSet(Flag.DELETED) || (messages[i].isSet(Flag.SEEN) && !retrieveSeenEmails)) {
+                    Message message = messages[i];
+                    if (message.isSet(Flag.DELETED) || (message.isSet(Flag.SEEN) && !retrieveSeenEmails)) {
                         continue;
                     }
                     try {
-                        emailHandler.handleEmail(folder.getMessage(messages[i].getMessageNumber()));
+                        emailHandler.handleEmail(folder.getMessage(message.getMessageNumber()));
                         if (deleteAfterRetrieval) {
-                            messages[i].setFlag(Flags.Flag.DELETED, true);
+                            message.setFlag(Flags.Flag.DELETED, true);
                         }
                     } catch (Throwable e) {
-                        if (!retrieveSeenEmails && messages[i].getFlags().contains(Flag.SEEN)) {
-                            messages[i].setFlag(Flags.Flag.SEEN, false);
+                        if (!retrieveSeenEmails && message.getFlags().contains(Flag.SEEN)) {
+                            message.setFlag(Flags.Flag.SEEN, false);
                         }
-                        if (messages[i].getFlags().contains(Flag.DELETED)) {
-                            messages[i].setFlag(Flags.Flag.DELETED, false);
+                        if (message.getFlags().contains(Flag.DELETED)) {
+                            message.setFlag(Flags.Flag.DELETED, false);
                         }
                         processingExceptions.add(e);
                     }
@@ -252,12 +250,11 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      * The common skeleton for all tasks. Handles the connection to the IMAP
      * mailbox.
      *
-     * @param <T> return type of the <pre>ImapFolderTask</pre>.
-     *
+     * @param <T>      return type of the <pre>ImapFolderTask</pre>.
      * @param imapTask task to execute.
      * @return the result of task execution.
      * @throws Exception if the connection can't be established successfully or
-     * the task fails.
+     *                   the task fails.
      */
     private <T> T doImapTask(final ImapFolderTask<T> imapTask) throws Exception {
         Folder folder = null;
@@ -282,7 +279,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
             return imapTask.doTaskInFolder(folder);
         } catch (Exception e) {
-            throw new MailBoxTaskExecutorException("Error while retreiving e-mails.", e);
+            throw new MailBoxTaskExecutorException("Error while retrieving e-mails.", e);
         } finally {
             if (folder != null && folder.isOpen()) {
                 folder.close(expunge);
@@ -341,7 +338,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     /**
      * Returns the mailbox password.
      *
-     * @return
+     * @return the mailbox password.
      */
     public final String getPassword() {
         return password;
@@ -389,7 +386,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Sets the
      * <pre>deleteAfterRetrieval</pre> flag.
      *
@@ -402,7 +399,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
     /**
      * {@inheritDoc}
-     *
+     * <p>
      * Sets the
      * <pre>retrieveSeenEmails</pre> flag.
      *
