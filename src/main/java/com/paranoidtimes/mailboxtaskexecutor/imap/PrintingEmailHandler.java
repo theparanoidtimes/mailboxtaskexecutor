@@ -25,27 +25,27 @@ public class PrintingEmailHandler implements EmailHandler {
     /**
      * A message header delimiter text.
      */
-    private static final String MESSAGE_HEADERS_DELIMETER = "=== Message Headers ===";
+    private static final String MESSAGE_HEADERS_DELIMITER = "=== Message Headers ===";
 
     /**
-     * A message content delimeter text.
+     * A message content delimiter text.
      */
-    private static final String MESSAGE_CONTENT_DELIMETER = "=== Message Content ===";
+    private static final String MESSAGE_CONTENT_DELIMITER = "=== Message Content ===";
 
     /**
-     * A message start delimeter text.
+     * A message start delimiter text.
      */
-    private static final String MESSAGE_START_DELIMETER = "=== Message Start ===";
+    private static final String MESSAGE_START_DELIMITER = "=== Message Start ===";
 
     /**
-     * A message end delimeter text.
+     * A message end delimiter text.
      */
-    private static final String MESSAGE_END_DELIMETER = "=== Message End ===";
+    private static final String MESSAGE_END_DELIMITER = "=== Message End ===";
 
     /**
-     * A message content part delimeter text.
+     * A message content part delimiter text.
      */
-    private static final String MESSAGE_CONTENT_PART_DELIMETER = "=== Message Content Part ===";
+    private static final String MESSAGE_CONTENT_PART_DELIMITER = "=== Message Content Part ===";
 
     /**
      * A default constructor.
@@ -67,11 +67,11 @@ public class PrintingEmailHandler implements EmailHandler {
      */
     @Override
     public void handleEmail(Message message) throws Exception {
-        print(MESSAGE_START_DELIMETER);
+        print(MESSAGE_START_DELIMITER);
         Enumeration allHeaders = message.getAllHeaders();
         printMessageHeaders(allHeaders);
         printMessageContent(message.getContent());
-        print(MESSAGE_END_DELIMETER);
+        print(MESSAGE_END_DELIMITER);
     }
 
     /**
@@ -82,7 +82,7 @@ public class PrintingEmailHandler implements EmailHandler {
      * @throws Exception if headers can not be printed.
      */
     private void printMessageHeaders(Enumeration headers) throws Exception {
-        print(MESSAGE_HEADERS_DELIMETER);
+        print(MESSAGE_HEADERS_DELIMITER);
         while (headers.hasMoreElements()) {
             Header h = (Header) headers.nextElement();
             print(h.getName() + ":" + h.getValue());
@@ -90,14 +90,14 @@ public class PrintingEmailHandler implements EmailHandler {
     }
 
     /**
-     * Print the message content. Print the delimeter and calls
+     * Print the message content. Print the delimiter and calls
      * <pre>doPrintMessageContent</pre>.
      *
      * @param content content to print.
      * @throws Exception if the content can not be printed.
      */
     private void printMessageContent(Object content) throws Exception {
-        print(MESSAGE_CONTENT_DELIMETER);
+        print(MESSAGE_CONTENT_DELIMITER);
         doPrintMessageContent(content);
     }
 
@@ -120,10 +120,10 @@ public class PrintingEmailHandler implements EmailHandler {
                 doPrintMessageContent(mm.getBodyPart(i).getContent());
             }
         } else if (contentObject instanceof String) {
-            print(MESSAGE_CONTENT_PART_DELIMETER);
+            print(MESSAGE_CONTENT_PART_DELIMITER);
             print((String) contentObject);
         } else {
-            print(MESSAGE_CONTENT_PART_DELIMETER);
+            print(MESSAGE_CONTENT_PART_DELIMITER);
             print(contentObject.toString());
         }
     }

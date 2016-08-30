@@ -120,7 +120,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     public List<Message> retrieveEmails() throws MailBoxTaskExecutorException {
         try {
             return doImapTask((Folder folder) -> {
-                List<Message> retreivedEmails = new LinkedList<>();
+                List<Message> retrievedEmails = new LinkedList<>();
                 Flags seenFlag = new Flags(Flag.SEEN);
                 FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
                 Message[] messages = folder.search(flagTerm);
@@ -130,12 +130,12 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
                     if (messages[i].isSet(Flag.DELETED) || (messages[i].isSet(Flag.SEEN) && !retrieveSeenEmails)) {
                         continue;
                     }
-                    retreivedEmails.add(new MimeMessage((MimeMessage) folder.getMessage(messages[i].getMessageNumber())));
+                    retrievedEmails.add(new MimeMessage((MimeMessage) folder.getMessage(messages[i].getMessageNumber())));
                     if (deleteAfterRetrieval) {
                         messages[i].setFlag(Flags.Flag.DELETED, true);
                     }
                 }
-                return retreivedEmails;
+                return retrievedEmails;
             });
         } catch (Exception ex) {
             throw new MailBoxTaskExecutorException("Error while retrieving e-mail from the mailbox folder.", ex);
@@ -244,9 +244,8 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      * @return the number of messages that should be retrieved.
      */
     private int getRetrieveCount(int numberOfMessages) {
-        int retrieveCount = batchSize == 0 ? numberOfMessages
+        return batchSize == 0 ? numberOfMessages
                 : numberOfMessages < batchSize ? numberOfMessages : batchSize;
-        return retrieveCount;
     }
 
     /**
@@ -383,7 +382,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      */
     public final void setBatchSize(int batchSize) {
         if (batchSize < 0) {
-            throw new IllegalArgumentException("Batch size must be eather zero or possitive!");
+            throw new IllegalArgumentException("Batch size must be either zero or positive!");
         }
         this.batchSize = batchSize;
     }
