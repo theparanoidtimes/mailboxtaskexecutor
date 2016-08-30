@@ -42,7 +42,7 @@ Second method returns true if there are more e-mails in the folder. If
 boolean result = executor.isThereRemainingEmails();
 ```
 
-This methods provides a extendible handling mechanism for each e-mail in the
+This methods provides a extensible handling mechanism for each e-mail in the
 folder. It executes the specified handler task on each e-mail. If 
 ```retrieveSeenEmails``` is ```true```, seen e-mails will be also processed. If
 ```deleteAfterRetrieval``` is ```true``` than all processed e-mails will be marked
