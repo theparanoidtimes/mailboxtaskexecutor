@@ -154,9 +154,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
             return doImapTask((final Folder folder) -> {
                 Flags seenFlag = new Flags(Flag.SEEN);
                 FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
-                Message[] messages;
-                messages = folder.search(flagTerm);
-                return messages.length > 0;
+                return folder.search(flagTerm).length > 0;
             });
         } catch (Exception ex) {
             throw new MailBoxTaskExecutorException("Error while getting remaining e-mails number.", ex);

@@ -20,7 +20,7 @@ public interface MailboxTaskExecutor {
 
     /**
      * Returns true if there is more e-mails in the specified location otherwise
-     * true.
+     * false.
      *
      * @return true if there is more e-mail in the specified location, otherwise
      * false.
