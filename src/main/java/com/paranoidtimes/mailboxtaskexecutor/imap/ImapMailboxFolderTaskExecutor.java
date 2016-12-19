@@ -115,7 +115,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     @Override
     public List<Message> retrieveEmails() throws MailBoxTaskExecutorException {
         try {
-            return doImapTask((Folder folder) -> {
+            return doImapTask((final Folder folder) -> {
                 List<Message> retrievedEmails = new LinkedList<>();
                 Flags seenFlag = new Flags(Flag.SEEN);
                 FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
@@ -123,7 +123,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
                 int retrieveCount = getRetrieveCount(messages.length);
 
                 for (int i = 0; i < retrieveCount; i++) {
-                    if (messages[i].isSet(Flag.DELETED) || (messages[i].isSet(Flag.SEEN) && !retrieveSeenEmails)) {
+                    if (messages[i].isSet(Flag.DELETED) || (!retrieveSeenEmails && messages[i].isSet(Flag.SEEN))) {
                         continue;
                     }
                     retrievedEmails.add(new MimeMessage((MimeMessage) folder.getMessage(messages[i].getMessageNumber())));
@@ -149,7 +149,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      * @throws MailBoxTaskExecutorException if the task can't execute properly.
      */
     @Override
-    public boolean isThereRemainingEmails() throws MailBoxTaskExecutorException {
+    public boolean areThereRemainingEmails() throws MailBoxTaskExecutorException {
         try {
             return doImapTask((final Folder folder) -> {
                 Flags seenFlag = new Flags(Flag.SEEN);
@@ -182,7 +182,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     public void executeForEachEmail(final EmailHandler emailHandler) throws MailBoxTaskExecutorException {
         final LinkedList<Throwable> processingExceptions = new LinkedList<>();
         try {
-            doImapTask((Folder folder) -> {
+            doImapTask((final Folder folder) -> {
                 Flags seenFlag = new Flags(Flag.SEEN);
                 FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
                 Message[] messages = folder.search(flagTerm);
@@ -190,7 +190,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
                 for (int i = 0; i < retrieveCount; i++) {
                     Message message = messages[i];
-                    if (message.isSet(Flag.DELETED) || (message.isSet(Flag.SEEN) && !retrieveSeenEmails)) {
+                    if (message.isSet(Flag.DELETED) || (!retrieveSeenEmails && message.isSet(Flag.SEEN))) {
                         continue;
                     }
                     try {

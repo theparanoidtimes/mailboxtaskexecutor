@@ -27,7 +27,7 @@ public interface MailboxTaskExecutor {
      * @throws MailBoxTaskExecutorException if executor can't execute the task
      *                                      do to an error.
      */
-    boolean isThereRemainingEmails() throws MailBoxTaskExecutorException;
+    boolean areThereRemainingEmails() throws MailBoxTaskExecutorException;
 
     /**
      * Invokes the passed handler on each e-mail in the specified location.
