@@ -39,7 +39,7 @@ Second method returns true if there are more e-mails in the folder. If
 ```retrieveSeenEmails``` is ```true```, those e-mails will be counted also.
 
 ```java
-boolean result = executor.isThereRemainingEmails();
+boolean result = executor.areThereRemainingEmails();
 ```
 
 This methods provides a extensible handling mechanism for each e-mail in the
