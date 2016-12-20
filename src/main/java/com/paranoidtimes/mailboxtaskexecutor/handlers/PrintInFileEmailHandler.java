@@ -33,6 +33,11 @@ public class PrintInFileEmailHandler implements EmailHandler {
     private PrintStream stream = null;
 
     /**
+     * A flag indicating if handler should print only mail headers.
+     */
+    private boolean printHeadersOnly = false;
+
+    /**
      * Constructs a new instance.
      *
      * @param fileName file in which to print the output.
@@ -66,6 +71,7 @@ public class PrintInFileEmailHandler implements EmailHandler {
         if (printingEmailHandler == null && stream == null) {
             this.stream = new PrintStream(new BufferedOutputStream(new FileOutputStream(new File(fileName))));
             printingEmailHandler = new PrintingEmailHandler(stream);
+            printingEmailHandler.setPrintHeadersOnly(printHeadersOnly);
         }
     }
 
@@ -101,5 +107,23 @@ public class PrintInFileEmailHandler implements EmailHandler {
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
+    }
+
+    /**
+     * Returns printHeadersOnly flag.
+     *
+     * @return printHeadersOnly flag.
+     */
+    public boolean isPrintHeadersOnly() {
+        return printHeadersOnly;
+    }
+
+    /**
+     * Sets printHeadersOnly flag.
+     *
+     * @param printHeadersOnly a boolean value.
+     */
+    public void setPrintHeadersOnly(boolean printHeadersOnly) {
+        this.printHeadersOnly = printHeadersOnly;
     }
 }

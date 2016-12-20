@@ -3,6 +3,8 @@ package com.paranoidtimes.mailboxtaskexecutor.imap;
 import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
 import com.paranoidtimes.mailboxtaskexecutor.api.MailBoxTaskExecutorException;
 import com.paranoidtimes.mailboxtaskexecutor.api.MailboxTaskExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.mail.*;
 import javax.mail.Flags.Flag;
@@ -21,6 +23,11 @@ import java.util.Properties;
  * @author djosifovic
  */
 public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
+
+    /**
+     * Log instance.
+     */
+    private static final Logger LOG = LoggerFactory.getLogger(ImapMailboxFolderTaskExecutor.class);
 
     /**
      * Mailbox host address.
@@ -115,23 +122,33 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     @Override
     public List<Message> retrieveEmails() throws MailBoxTaskExecutorException {
         try {
-            return doImapTask((final Folder folder) -> {
-                List<Message> retrievedEmails = new LinkedList<>();
-                Flags seenFlag = new Flags(Flag.SEEN);
-                FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
-                Message[] messages = folder.search(flagTerm);
-                int retrieveCount = getRetrieveCount(messages.length);
+            return doImapTask(new ImapFolderTask<List<Message>>() {
+                @Override
+                public List<Message> doTaskInFolder(Folder folder) throws Exception {
+                    List<Message> retrievedEmails = new LinkedList<>();
+                    Flags seenFlag = new Flags(Flag.SEEN);
+                    FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
+                    Message[] messages = folder.search(flagTerm);
+                    int retrieveCount = getRetrieveCount(messages.length);
 
-                for (int i = 0; i < retrieveCount; i++) {
-                    if (messages[i].isSet(Flag.DELETED) || (!retrieveSeenEmails && messages[i].isSet(Flag.SEEN))) {
-                        continue;
+                    for (int i = 0; i < retrieveCount; i++) {
+                        if (messages[i].isSet(Flag.DELETED) || (!retrieveSeenEmails && messages[i].isSet(Flag.SEEN))) {
+                            LOG.trace("Skipping message {} because it is marked as DELETED or SEEN and retrieveSeenEmails is false!", i);
+                            continue;
+                        }
+                        retrievedEmails.add(copyOf(folder.getMessage(messages[i].getMessageNumber())));
+                        if (deleteAfterRetrieval) {
+                            LOG.trace("Marking message {} as DELETED.", i);
+                            messages[i].setFlag(Flags.Flag.DELETED, true);
+                        }
                     }
-                    retrievedEmails.add(new MimeMessage((MimeMessage) folder.getMessage(messages[i].getMessageNumber())));
-                    if (deleteAfterRetrieval) {
-                        messages[i].setFlag(Flags.Flag.DELETED, true);
-                    }
+                    return retrievedEmails;
                 }
-                return retrievedEmails;
+
+                @Override
+                public String getTaskName() {
+                    return "RetrieveEmailsImapFolderTask";
+                }
             });
         } catch (Exception ex) {
             throw new MailBoxTaskExecutorException("Error while retrieving e-mail from the mailbox folder.", ex);
@@ -151,10 +168,18 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     @Override
     public boolean areThereRemainingEmails() throws MailBoxTaskExecutorException {
         try {
-            return doImapTask((final Folder folder) -> {
-                Flags seenFlag = new Flags(Flag.SEEN);
-                FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
-                return folder.search(flagTerm).length > 0;
+            return doImapTask(new ImapFolderTask<Boolean>() {
+                @Override
+                public Boolean doTaskInFolder(Folder folder) throws Exception {
+                    Flags seenFlag = new Flags(Flag.SEEN);
+                    FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
+                    return folder.search(flagTerm).length > 0;
+                }
+
+                @Override
+                public String getTaskName() {
+                    return "AreThereRemainingEmailsImapFolderTask";
+                }
             });
         } catch (Exception ex) {
             throw new MailBoxTaskExecutorException("Error while getting remaining e-mails number.", ex);
@@ -182,33 +207,46 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     public void executeForEachEmail(final EmailHandler emailHandler) throws MailBoxTaskExecutorException {
         final LinkedList<Throwable> processingExceptions = new LinkedList<>();
         try {
-            doImapTask((final Folder folder) -> {
-                Flags seenFlag = new Flags(Flag.SEEN);
-                FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
-                Message[] messages = folder.search(flagTerm);
-                int retrieveCount = getRetrieveCount(messages.length);
+            doImapTask(new ImapFolderTask<Void>() {
+                @Override
+                public Void doTaskInFolder(Folder folder) throws Exception {
+                    Flags seenFlag = new Flags(Flag.SEEN);
+                    FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
+                    Message[] messages = folder.search(flagTerm);
+                    int retrieveCount = getRetrieveCount(messages.length);
 
-                for (int i = 0; i < retrieveCount; i++) {
-                    Message message = messages[i];
-                    if (message.isSet(Flag.DELETED) || (!retrieveSeenEmails && message.isSet(Flag.SEEN))) {
-                        continue;
+                    for (int i = 0; i < retrieveCount; i++) {
+                        Message message = messages[i];
+                        if (message.isSet(Flag.DELETED) || (!retrieveSeenEmails && message.isSet(Flag.SEEN))) {
+                            LOG.trace("Skipping message {} because it is marked as DELETED or SEEN and retrieveSeenEmails is false!", i);
+                            continue;
+                        }
+                        try {
+                            emailHandler.handleEmail(copyOf(folder.getMessage(message.getMessageNumber())));
+                            if (deleteAfterRetrieval) {
+                                LOG.trace("Marking message {} as DELETED.", i);
+                                message.setFlag(Flags.Flag.DELETED, true);
+                            }
+                        } catch (Throwable e) {
+                            LOG.error("Error happened while handling e-mail message {}!", i, e);
+                            if (!retrieveSeenEmails && message.getFlags().contains(Flag.SEEN)) {
+                                LOG.trace("Reverting SEEN flag for message {}...", i);
+                                message.setFlag(Flags.Flag.SEEN, false);
+                            }
+                            if (message.getFlags().contains(Flag.DELETED)) {
+                                LOG.trace("Reverting DELETED flag for message {}...", i);
+                                message.setFlag(Flags.Flag.DELETED, false);
+                            }
+                            processingExceptions.add(e);
+                        }
                     }
-                    try {
-                        emailHandler.handleEmail(folder.getMessage(message.getMessageNumber()));
-                        if (deleteAfterRetrieval) {
-                            message.setFlag(Flags.Flag.DELETED, true);
-                        }
-                    } catch (Throwable e) {
-                        if (!retrieveSeenEmails && message.getFlags().contains(Flag.SEEN)) {
-                            message.setFlag(Flags.Flag.SEEN, false);
-                        }
-                        if (message.getFlags().contains(Flag.DELETED)) {
-                            message.setFlag(Flags.Flag.DELETED, false);
-                        }
-                        processingExceptions.add(e);
-                    }
+                    return null;
                 }
-                return null;
+
+                @Override
+                public String getTaskName() {
+                    return "ExecuteForEachEmailImapFolderTask";
+                }
             });
         } catch (Exception ex) {
             expunge = false;
@@ -217,6 +255,18 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
         if (!processingExceptions.isEmpty()) {
             throw new MailBoxTaskExecutorException("Error(s) happened while handling e-mails.", processingExceptions);
         }
+    }
+
+    /**
+     * Returns a copy of passed message as a instance of
+     * <pre>{@link MimeMessage}</pre>.
+     *
+     * @param message a message to copy.
+     * @return a copy of the message.
+     * @throws MessagingException if passed message failed to copy.
+     */
+    private Message copyOf(Message message) throws MessagingException {
+        return new MimeMessage((MimeMessage) message);
     }
 
     /**
@@ -267,12 +317,19 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
 
             folder = store.getFolder(folderName);
             if (!folder.exists()) {
-                throw new IllegalArgumentException("The specified folder doesn't exist.");
+                throw new IllegalArgumentException("The specified folder doesn't exist!");
             }
             folder.open(Folder.READ_WRITE);
 
-            return imapTask.doTaskInFolder(folder);
+            LOG.trace("Starting {} with retrieveSeenEmails set to {} and deleteAfterRetrieval set to {}.", imapTask.getTaskName(), retrieveSeenEmails, deleteAfterRetrieval);
+            long startTime = System.currentTimeMillis();
+            T result = imapTask.doTaskInFolder(folder);
+            long endTime = System.currentTimeMillis();
+
+            LOG.info("Finished task {}, with result {} in {} seconds", imapTask.getTaskName(), result, (endTime - startTime) / 1000);
+            return result;
         } catch (Exception e) {
+            LOG.error("Error happened while executing task {}!", imapTask.getTaskName(), e);
             throw new MailBoxTaskExecutorException("Error while retrieving e-mails.", e);
         } finally {
             if (folder != null && folder.isOpen()) {
@@ -294,11 +351,14 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     }
 
     /**
-     * Sets the connection timeout for IMAP connection.
+     * Sets the connection timeout for IMAP connection. Timeout bust be positive
+     * or it can be -1 which means infinite timeout (no timeout).
      *
      * @param connectionTimeout timeout to set.
      */
     public void setConnectionTimeout(int connectionTimeout) {
+        if (connectionTimeout < -1)
+            throw new IllegalArgumentException("Connection timeout must be greater then or equal to -1!");
         this.connectionTimeout = connectionTimeout;
     }
 

@@ -49,6 +49,11 @@ public class PrintingEmailHandler implements EmailHandler {
     private static final String MESSAGE_CONTENT_PART_DELIMITER = "=== Message Content Part ===";
 
     /**
+     * A flag indicating if handler should print only mail headers.
+     */
+    private boolean printHeadersOnly = false;
+
+    /**
      * A default constructor.
      *
      * @param printStream stream to print e-mail to.
@@ -71,7 +76,8 @@ public class PrintingEmailHandler implements EmailHandler {
         print(MESSAGE_START_DELIMITER);
         Enumeration allHeaders = message.getAllHeaders();
         printMessageHeaders(allHeaders);
-        printMessageContent(message.getContent());
+        if (!printHeadersOnly)
+            printMessageContent(message.getContent());
         print(MESSAGE_END_DELIMITER);
     }
 
@@ -138,5 +144,23 @@ public class PrintingEmailHandler implements EmailHandler {
      */
     private void print(String text) throws Exception {
         printStream.println(text);
+    }
+
+    /**
+     * Returns printHeadersOnly flag.
+     *
+     * @return printHeadersOnly flag.
+     */
+    public boolean isPrintHeadersOnly() {
+        return printHeadersOnly;
+    }
+
+    /**
+     * Sets printHeadersOnly flag.
+     *
+     * @param printHeadersOnly a boolean value.
+     */
+    public void setPrintHeadersOnly(boolean printHeadersOnly) {
+        this.printHeadersOnly = printHeadersOnly;
     }
 }
