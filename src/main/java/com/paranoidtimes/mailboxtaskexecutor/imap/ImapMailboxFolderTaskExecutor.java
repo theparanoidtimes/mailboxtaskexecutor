@@ -10,6 +10,8 @@ import javax.mail.*;
 import javax.mail.Flags.Flag;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.FlagTerm;
+import javax.mail.search.OrTerm;
+import javax.mail.search.SearchTerm;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
@@ -126,9 +128,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
                 @Override
                 public List<Message> doTaskInFolder(Folder folder) throws Exception {
                     List<Message> retrievedEmails = new LinkedList<>();
-                    Flags seenFlag = new Flags(Flag.SEEN);
-                    FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
-                    Message[] messages = folder.search(flagTerm);
+                    Message[] messages = folder.search(getSearchTerm());
                     int retrieveCount = getRetrieveCount(messages.length);
 
                     for (int i = 0; i < retrieveCount; i++) {
@@ -171,9 +171,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
             return doImapTask(new ImapFolderTask<Boolean>() {
                 @Override
                 public Boolean doTaskInFolder(Folder folder) throws Exception {
-                    Flags seenFlag = new Flags(Flag.SEEN);
-                    FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
-                    return folder.search(flagTerm).length > 0;
+                    return folder.search(getSearchTerm()).length > 0;
                 }
 
                 @Override
@@ -210,9 +208,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
             doImapTask(new ImapFolderTask<Void>() {
                 @Override
                 public Void doTaskInFolder(Folder folder) throws Exception {
-                    Flags seenFlag = new Flags(Flag.SEEN);
-                    FlagTerm flagTerm = new FlagTerm(seenFlag, retrieveSeenEmails);
-                    Message[] messages = folder.search(flagTerm);
+                    Message[] messages = folder.search(getSearchTerm());
                     int retrieveCount = getRetrieveCount(messages.length);
 
                     for (int i = 0; i < retrieveCount; i++) {
@@ -255,6 +251,23 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
         if (!processingExceptions.isEmpty()) {
             throw new MailBoxTaskExecutorException("Error(s) happened while handling e-mails.", processingExceptions);
         }
+    }
+
+    /**
+     * Returns a <pre>{@link SearchTerm}</pre> to be used when retrieving messages.
+     * Default term is only for unseen emails, but when retrieveSeenEmails is
+     * set to true it returns a union of terms for both unseen and seen messages.
+     *
+     * @return a search term to be used for message retrieval.
+     */
+    private SearchTerm getSearchTerm() {
+        Flags seenFlag = new Flags(Flag.SEEN);
+        FlagTerm unseenFlagTerm = new FlagTerm(seenFlag, false);
+        if (retrieveSeenEmails) {
+            FlagTerm seenFlagTerm = new FlagTerm(seenFlag, true);
+            return new OrTerm(unseenFlagTerm, seenFlagTerm);
+        }
+        return unseenFlagTerm;
     }
 
     /**
