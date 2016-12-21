@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * A Mailbox Task Executor implementation for IMAP protocol mailboxes. This
+ * A Mailbox Task Executor implementation for IMAP(S) protocol mailboxes. This
  * executor concentrates on a specific folder in the given mailbox which means
  * that all tasks are executed in the specified folder and have no knowledge of
  * other folders in the mailbox.
@@ -52,7 +52,9 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     private final String folderName;
 
     /**
-     * Batch size for retrieving e-mails.
+     * Batch size for retrieving e-mails. More specifically the maximum number
+     * of messages that will be retrieved in one run. Does not indicate the
+     * number of messages that are pulled from mailbox in one time.
      */
     private int batchSize = DEFAULT_BATCH_SIZE;
 
@@ -79,6 +81,18 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     private int connectionTimeout = DEFAULT_CONNECTION_TIMEOUT;
 
     /**
+     * The port number on which to connect to. When null defaults to IMAP(S)
+     * port number.
+     */
+    private Integer port = null;
+
+    /**
+     * A flag indicating if IMAP or IMAPS protocol should be used.
+     * Default is true which means IMAPS.
+     */
+    private boolean secure = true;
+
+    /**
      * A default connection timeout - infinite timeout.
      */
     private static final int DEFAULT_CONNECTION_TIMEOUT = -1;
@@ -89,8 +103,9 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     private static final int DEFAULT_BATCH_SIZE = 0;
 
     /**
-     * A default
-     * <pre>ImapMailboxFolderTaskExecutor</pre> constructor.
+     * Constructs a new <pre>{@link ImapMailboxFolderTaskExecutor}</pre> instance
+     * with specified host address, username, password and folder
+     * name.
      *
      * @param imapHostAddress the host address of the mailbox.
      * @param username        the username for the mailbox.
@@ -105,6 +120,56 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
     }
 
     /**
+     * Constructs a new <pre>{@link ImapMailboxFolderTaskExecutor}</pre> instance
+     * with specified host address, port number, username, password and folder
+     * name.
+     *
+     * @param imapHostAddress the host address of the mailbox.
+     * @param port            the port number to connect to.
+     * @param username        the username for the mailbox.
+     * @param password        the password for the mailbox.
+     * @param folderName      the folder name in which all tasks will be executed.
+     */
+    public ImapMailboxFolderTaskExecutor(String imapHostAddress, Integer port, String username, String password, String folderName) {
+        this(imapHostAddress, username, password, folderName);
+        this.port = port;
+    }
+
+    /**
+     * Constructs a new <pre>{@link ImapMailboxFolderTaskExecutor}</pre> instance
+     * with specified host address, username, password, folder name and secure
+     * flag.
+     *
+     * @param imapHostAddress the host address of the mailbox.
+     * @param username        the username for the mailbox.
+     * @param password        the password for the mailbox.
+     * @param folderName      the folder name in which all tasks will be executed.
+     * @param secure          the flag indicating if IMAP or IMAPS should be used.
+     */
+    public ImapMailboxFolderTaskExecutor(String imapHostAddress, String username, String password, String folderName, boolean secure) {
+        this(imapHostAddress, username, password, folderName);
+        this.secure = secure;
+    }
+
+    /**
+     * Constructs a new <pre>{@link ImapMailboxFolderTaskExecutor}</pre> instance
+     * with specified host address, port number, username, password, folder name
+     * and secure flag.
+     *
+     * @param imapHostAddress the host address of the mailbox.
+     * @param port            the port number to connect to.
+     * @param username        the username for the mailbox.
+     * @param password        the password for the mailbox.
+     * @param folderName      the folder name in which all tasks will be executed.
+     * @param secure          the flag indicating if IMAP or IMAPS should be used.
+     */
+    public ImapMailboxFolderTaskExecutor(String imapHostAddress, Integer port, String username, String password, String folderName, boolean secure) {
+        this(imapHostAddress, username, password, folderName);
+        this.port = port;
+        this.secure = secure;
+    }
+
+    /**
      * {@inheritDoc}
      * Retrieves all e-mails or
      * <pre>batchSize</pre> of e-mails from the specified mailbox folder.
@@ -115,7 +180,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      * All messages are copied to the returning list so no connection must be
      * maintained in order to use them.
      *
-     * This is designed as a batch task, so for retrieving all e-mails using a
+     * This is designed as a 'batch' task, so for retrieving all e-mails using a
      * positive batch size the task should be called multiple times.
      *
      * @return a list of e-mails from the folder.
@@ -191,11 +256,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      *
      * Task is invoked on each e-mail in the mailbox. If some Exception happens
      * during the execution of tasks, all flags that are set during the
-     * processing are reverted. All exceptions that might've happened while
-     * processing e-mails ( exceptions for each e-mail) are collected and will
-     * be thrown after the processing. To get the collection use
-     * <pre>MailBoxTaskExecutorException
-     * .getProcessingExceptions</pre>.
+     * processing are reverted.
      *
      * @param emailHandler handler for each e-mail.
      * @throws MailBoxTaskExecutorException if some error happened during
@@ -203,7 +264,6 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      */
     @Override
     public void executeForEachEmail(final EmailHandler emailHandler) throws MailBoxTaskExecutorException {
-        final LinkedList<Throwable> processingExceptions = new LinkedList<>();
         try {
             doImapTask(new ImapFolderTask<Void>() {
                 @Override
@@ -233,7 +293,6 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
                                 LOG.trace("Reverting DELETED flag for message {}...", i);
                                 message.setFlag(Flags.Flag.DELETED, false);
                             }
-                            processingExceptions.add(e);
                         }
                     }
                     return null;
@@ -246,10 +305,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
             });
         } catch (Exception ex) {
             expunge = false;
-            throw new MailBoxTaskExecutorException("Error while executing task in folder.", ex, processingExceptions.isEmpty() ? null : processingExceptions);
-        }
-        if (!processingExceptions.isEmpty()) {
-            throw new MailBoxTaskExecutorException("Error(s) happened while handling e-mails.", processingExceptions);
+            throw new MailBoxTaskExecutorException("Error while executing task in folder.", ex);
         }
     }
 
@@ -318,15 +374,21 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
         Store store = null;
 
         Properties properties = new Properties();
-        properties.setProperty("mail.store.protocol", "imaps");
         properties.setProperty("mail.imap.connectiontimeout", String.valueOf(connectionTimeout));
-        properties.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-        properties.setProperty("mail.imap.socketFactory.fallback", "false");
+        if (secure) {
+            properties.setProperty("mail.store.protocol", "imaps");
+            properties.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            properties.setProperty("mail.imap.socketFactory.fallback", "false");
+        } else
+            properties.setProperty("mail.store.protocol", "imap");
 
         try {
-            Session session = Session.getDefaultInstance(properties, null);
+            Session session = Session.getInstance(properties);
             store = session.getStore();
-            store.connect(imapHostAddress, username, password);
+            if (port == null)
+                store.connect(imapHostAddress, username, password);
+            else
+                store.connect(imapHostAddress, port, username, password);
 
             folder = store.getFolder(folderName);
             if (!folder.exists()) {
@@ -436,6 +498,24 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
      */
     public final boolean isRetrieveSeenEmails() {
         return retrieveSeenEmails;
+    }
+
+    /**
+     * Returns the port number.
+     *
+     * @return port number or <pre>null</pre> when port is not defined.
+     */
+    public Integer getPort() {
+        return port;
+    }
+
+    /**
+     * Returns the value of the secure flag.
+     *
+     * @return true if IMAPS is used, false when IMAP is used.
+     */
+    public boolean isSecure() {
+        return secure;
     }
 
     /**
