@@ -6,6 +6,7 @@ import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
 import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
 import com.paranoidtimes.mailboxtaskexecutor.api.MailboxTaskExecutor;
+import com.paranoidtimes.mailboxtaskexecutor.handlers.ChangeMessageFlagEmailHandler;
 import com.paranoidtimes.mailboxtaskexecutor.imap.ImapMailboxFolderTaskExecutor;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -52,9 +53,7 @@ public class ImapMailboxFolderTaskExecutorTest {
     public void executorWillExecuteHandlerForEachEmail() throws Exception {
         appendTwoUnseenMessagesToUserInbox();
 
-        MailboxTaskExecutor mailboxTaskExecutor = getMailboxTaskExecutor();
-        mailboxTaskExecutor.executeForEachEmail(message -> {
-        });
+        getMailboxTaskExecutor().executeForEachEmail(message -> {});
 
         assertThat(inbox.getNonDeletedMessages().size(), equalTo(2));
     }
@@ -65,8 +64,7 @@ public class ImapMailboxFolderTaskExecutorTest {
 
         MailboxTaskExecutor mailboxTaskExecutor = getMailboxTaskExecutor();
         mailboxTaskExecutor.setDeleteAfterRetrieval(true);
-        mailboxTaskExecutor.executeForEachEmail(message -> {
-        });
+        mailboxTaskExecutor.executeForEachEmail(message -> {});
 
         assertThat(inbox.getMessageCount(), equalTo(0));
     }
@@ -75,8 +73,7 @@ public class ImapMailboxFolderTaskExecutorTest {
     public void executorWillRecoverSeenFlagsInCaseOfFailedHandling() throws Exception {
         appendTwoUnseenMessagesToUserInbox();
 
-        MailboxTaskExecutor mailboxTaskExecutor = getMailboxTaskExecutor();
-        mailboxTaskExecutor.executeForEachEmail(new FaultyEmailHandler());
+        getMailboxTaskExecutor().executeForEachEmail(new FaultyEmailHandler());
 
         assertThat(inbox.getUnseenCount(), equalTo(2));
     }
@@ -97,8 +94,7 @@ public class ImapMailboxFolderTaskExecutorTest {
     public void executorWillRetrieveAllUnseenEmails() throws Exception {
         appendTwoUnseenMessagesToUserInbox();
 
-        MailboxTaskExecutor mailboxTaskExecutor = getMailboxTaskExecutor();
-        List<Message> messages = mailboxTaskExecutor.retrieveEmails();
+        List<Message> messages = getMailboxTaskExecutor().retrieveEmails();
 
         assertThat(messages.size(), equalTo(2));
         assertThat(messages, contains(
@@ -119,8 +115,7 @@ public class ImapMailboxFolderTaskExecutorTest {
         inbox.appendMessage(mimeMessage1, new Flags(), new Date());
         inbox.appendMessage(mimeMessage2, new Flags(Flags.Flag.SEEN), new Date());
 
-        MailboxTaskExecutor mailboxTaskExecutor = getMailboxTaskExecutor();
-        List<Message> messages = mailboxTaskExecutor.retrieveEmails();
+        List<Message> messages = getMailboxTaskExecutor().retrieveEmails();
 
         assertThat(messages.size(), equalTo(1));
         assertThat(messages, contains(allOf(
@@ -134,16 +129,14 @@ public class ImapMailboxFolderTaskExecutorTest {
         MimeMessage mimeMessage = mimeMessageWithFromSubjectAndContent("f@localhost", "s", "c");
         inbox.appendMessage(mimeMessage, new Flags(), new Date());
 
-        MailboxTaskExecutor mailboxTaskExecutor = getMailboxTaskExecutor();
-        boolean result = mailboxTaskExecutor.areThereRemainingEmails();
+        boolean result = getMailboxTaskExecutor().areThereRemainingEmails();
 
         assertThat(result, equalTo(true));
     }
 
     @Test
     public void executorWillReturnFalseForIsThereRemainingEmailsWhenThereAreNoUnseenEmailsInMailboxFolder() throws Exception {
-        MailboxTaskExecutor mailboxTaskExecutor = getMailboxTaskExecutor();
-        boolean result = mailboxTaskExecutor.areThereRemainingEmails();
+        boolean result = getMailboxTaskExecutor().areThereRemainingEmails();
 
         assertThat(result, equalTo(false));
     }
@@ -154,10 +147,20 @@ public class ImapMailboxFolderTaskExecutorTest {
         Flags flags = new Flags(Flags.Flag.SEEN);
         inbox.appendMessage(mimeMessage, flags, new Date());
 
-        MailboxTaskExecutor mailboxTaskExecutor = getMailboxTaskExecutor();
-        boolean result = mailboxTaskExecutor.areThereRemainingEmails();
+        boolean result = getMailboxTaskExecutor().areThereRemainingEmails();
 
         assertThat(result, equalTo(false));
+    }
+
+    // Handler tests
+
+    @Test
+    public void changeMessageFlagMailHandlerWillChangeAllEmailFlags() throws Exception {
+        appendTwoUnseenMessagesToUserInbox();
+
+        getMailboxTaskExecutor().executeForEachEmail(new ChangeMessageFlagEmailHandler("recent", true));
+
+        assertThat(inbox.getRecentCount(false), equalTo(2));
     }
 
     // Utilities

@@ -1,6 +1,7 @@
 package com.paranoidtimes.mailboxtaskexecutor.handlers;
 
 import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
+import com.paranoidtimes.mailboxtaskexecutor.api.UnlinkedEmailHandler;
 
 import javax.mail.Header;
 import javax.mail.Message;
@@ -15,7 +16,7 @@ import java.util.Enumeration;
  *
  * @author djosifovic
  */
-public class PrintingEmailHandler implements EmailHandler {
+public class PrintingEmailHandler extends UnlinkedEmailHandler {
 
     /**
      * The
@@ -72,7 +73,7 @@ public class PrintingEmailHandler implements EmailHandler {
      * @throws Exception if message can not be printed to the stream.
      */
     @Override
-    public void handleEmail(Message message) throws Exception {
+    public void doHandleEmail(Message message) throws Exception {
         print(MESSAGE_START_DELIMITER);
         Enumeration allHeaders = message.getAllHeaders();
         printMessageHeaders(allHeaders);

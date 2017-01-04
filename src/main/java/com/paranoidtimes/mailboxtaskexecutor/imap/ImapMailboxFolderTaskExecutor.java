@@ -278,7 +278,7 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
                             continue;
                         }
                         try {
-                            emailHandler.handleEmail(copyOf(folder.getMessage(message.getMessageNumber())));
+                            emailHandler.handleEmail(folder.getMessage(message.getMessageNumber()));
                             if (deleteAfterRetrieval) {
                                 LOG.trace("Marking message {} as DELETED.", i);
                                 message.setFlag(Flags.Flag.DELETED, true);

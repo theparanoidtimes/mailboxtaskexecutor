@@ -1,6 +1,7 @@
 package com.paranoidtimes.mailboxtaskexecutor.handlers;
 
 import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
+import com.paranoidtimes.mailboxtaskexecutor.api.UnlinkedEmailHandler;
 
 import javax.mail.Message;
 import java.io.BufferedOutputStream;
@@ -14,7 +15,7 @@ import java.io.PrintStream;
  *
  * @author djosifovic
  */
-public class PrintInFileEmailHandler implements EmailHandler {
+public class PrintInFileEmailHandler extends UnlinkedEmailHandler {
 
     /**
      * Name of the file in which to print the output.
@@ -56,7 +57,7 @@ public class PrintInFileEmailHandler implements EmailHandler {
      * @see PrintInFileEmailHandler#finish()
      */
     @Override
-    public void handleEmail(Message message) throws Exception {
+    public void doHandleEmail(Message message) throws Exception {
         initStream();
         printingEmailHandler.handleEmail(message);
     }

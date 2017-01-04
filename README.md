@@ -74,6 +74,13 @@ e-mail to the given ```PrintStream```.
 executor.executeForEachEmail(new PrintingEmailHandler(System.out));
 ```
 
+Example ```EmailHandler``` is actually an instance of ```UnlinkedEmailHandler```
+which copies the retrieved message before executing the handling code. This
+means that messages will be retrieved fully (its contents, headers, flags etc)
+before handling. There is no 'connection' with IMAP server when using
+```UnlinkedEmailHandler``` because handling is done on message copies so tasks
+like modifying flags or deleting messages will not be possible.
+
 # License #
 
 Distributed under GNU LESSER GENERAL PUBLIC LICENSE Version 3.
