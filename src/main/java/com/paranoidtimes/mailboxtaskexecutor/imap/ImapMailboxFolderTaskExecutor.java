@@ -304,7 +304,6 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
                 }
             });
         } catch (Exception ex) {
-            expunge = false;
             throw new MailBoxTaskExecutorException("Error while executing task in folder.", ex);
         }
     }
@@ -373,22 +372,10 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
         Folder folder = null;
         Store store = null;
 
-        Properties properties = new Properties();
-        properties.setProperty("mail.imap.connectiontimeout", String.valueOf(connectionTimeout));
-        if (secure) {
-            properties.setProperty("mail.store.protocol", "imaps");
-            properties.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-            properties.setProperty("mail.imap.socketFactory.fallback", "false");
-        } else
-            properties.setProperty("mail.store.protocol", "imap");
-
         try {
+            Properties properties = configureSessionProperties();
             Session session = Session.getInstance(properties);
-            store = session.getStore();
-            if (port == null)
-                store.connect(imapHostAddress, username, password);
-            else
-                store.connect(imapHostAddress, port, username, password);
+            store = getAndConnectStore(session);
 
             folder = store.getFolder(folderName);
             if (!folder.exists()) {
@@ -404,16 +391,50 @@ public class ImapMailboxFolderTaskExecutor implements MailboxTaskExecutor {
             LOG.info("Finished task {}, with result {} in {} seconds", imapTask.getTaskName(), result, (endTime - startTime) / 1000);
             return result;
         } catch (Exception e) {
+            expunge = false;
             LOG.error("Error happened while executing task {}!", imapTask.getTaskName(), e);
             throw new MailBoxTaskExecutorException("Error while retrieving e-mails.", e);
         } finally {
-            if (folder != null && folder.isOpen()) {
-                folder.close(expunge);
-            }
-            if (store != null) {
-                store.close();
-            }
+            if (folder != null && folder.isOpen()) folder.close(expunge);
+            if (store != null) store.close();
         }
+    }
+
+    /**
+     * Retrieves a <pre>{@link Store}</pre> from passed <pre>{@link Session}</pre>
+     * object and connects to it using <pre>imapHostAddress</pre>, <pre>username</pre>,
+     * <pre>password</pre> and, if defined, <pre>port</pre>.
+     *
+     * @param session session from which to get the <pre>{@link Store}</pre>.
+     * @return a new and connected <pre>{@link Store}</pre> from passed
+     * <pre>Session</pre>.
+     * @throws Exception if <pre>Store</pre> can't be retrieved and/ot connected to.
+     */
+    private Store getAndConnectStore(Session session) throws Exception {
+        Store store = session.getStore();
+        if (port == null)
+            store.connect(imapHostAddress, username, password);
+        else
+            store.connect(imapHostAddress, port, username, password);
+        return store;
+    }
+
+    /**
+     * Configures IMAP session properties based on <pre>secure</pre> and
+     * <pre>connectionTimeout</pre> values.
+     *
+     * @return IMAP session properties.
+     */
+    private Properties configureSessionProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("mail.imap.connectiontimeout", String.valueOf(connectionTimeout));
+        if (secure) {
+            properties.setProperty("mail.store.protocol", "imaps");
+            properties.setProperty("mail.imap.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+            properties.setProperty("mail.imap.socketFactory.fallback", "false");
+        } else
+            properties.setProperty("mail.store.protocol", "imap");
+        return properties;
     }
 
     /**
