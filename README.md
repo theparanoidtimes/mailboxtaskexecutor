@@ -60,10 +60,8 @@ e-mails will be also processed. If ```deleteAfterRetrieval``` is ```true``` than
 all processed e-mails will be marked for deletion.
 
 ```java
-executor.executeForEachEmail(new EmailHandler() {
-    @Override public void handleEmail(Message message) throws Exception {
-        // do something with e-mail...
-    }
+mailboxTaskExecutor.executeForEachEmail(message -> {
+    // do something with the e-mail message...
 });
 ```
 
