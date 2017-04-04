@@ -1,4 +1,4 @@
-package com.paranoidtimes.mailboxtaskexecutor.api;
+package com.paranoidtimes.tabellarium.api;
 
 import javax.mail.Message;
 

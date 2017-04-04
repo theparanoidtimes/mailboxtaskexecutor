@@ -1,4 +1,4 @@
-package com.paranoidtimes.mailboxtaskexecutor.imap;
+package com.paranoidtimes.tabellarium.imap;
 
 import javax.mail.Folder;
 

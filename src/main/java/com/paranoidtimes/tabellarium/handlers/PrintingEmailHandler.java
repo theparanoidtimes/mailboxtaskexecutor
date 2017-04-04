@@ -1,7 +1,6 @@
-package com.paranoidtimes.mailboxtaskexecutor.handlers;
+package com.paranoidtimes.tabellarium.handlers;
 
-import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
-import com.paranoidtimes.mailboxtaskexecutor.api.UnlinkedEmailHandler;
+import com.paranoidtimes.tabellarium.api.UnlinkedEmailHandler;
 
 import javax.mail.Header;
 import javax.mail.Message;

@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.paranoidtimes</groupId>
-    <artifactId>mailboxtaskexecutor</artifactId>
+    <artifactId>tabellarium</artifactId>
     <version>0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Mailbox Task Executor</name>
+    <name>Tabellarium</name>
     <description>
         This library provides a collection of task that are executed against a
         e-mail mailbox.
@@ -35,7 +35,7 @@
 
     <scm>
         <developerConnection>
-            scm:git:https://github.com/theparanoidtimes/mailboxtaskexecutor.git
+            scm:git:https://github.com/theparanoidtimes/tabellarium.git
         </developerConnection>
         <tag>HEAD</tag>
     </scm>

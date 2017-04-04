@@ -1,8 +1,8 @@
-# Mailbox Task Executor #
+# Tabellarium #
 
 Version: 0.2-SNAPSHOT.
 
-Mailbox Task Executor executes task against an e-mail mailbox.
+Tabellarium executes task against an e-mail mailbox.
 
 Current API supports three methods which are implemented for IMAP
 protocol in ```ImapMailboxFolderTaskExecutor```. This implementation is IMAP

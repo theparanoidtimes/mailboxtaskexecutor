@@ -1,6 +1,6 @@
-package com.paranoidtimes.mailboxtaskexecutor.handlers;
+package com.paranoidtimes.tabellarium.handlers;
 
-import com.paranoidtimes.mailboxtaskexecutor.api.EmailHandler;
+import com.paranoidtimes.tabellarium.api.EmailHandler;
 
 import javax.mail.Flags;
 import javax.mail.Message;
