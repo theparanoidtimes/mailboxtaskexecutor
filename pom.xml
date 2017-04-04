@@ -6,7 +6,7 @@
 
     <groupId>com.paranoidtimes</groupId>
     <artifactId>tabellarium</artifactId>
-    <version>0.2-SNAPSHOT</version>
+    <version>0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Tabellarium</name>
@@ -118,16 +118,16 @@
     </build>
 
     <!--<distributionManagement>-->
-        <!--<snapshotRepository>-->
-            <!--<id>local-snapshots</id>-->
-            <!--<name>Local Nexus snapshot repository</name>-->
-            <!--<url>http://localhost:9876/nexus/content/repositories/snapshots/</url>-->
-        <!--</snapshotRepository>-->
-        <!--<repository>-->
-            <!--<id>local-releases</id>-->
-            <!--<name>Local Nexus release repository</name>-->
-            <!--<url>http://localhost:9876/nexus/content/repositories/releases/</url>-->
-        <!--</repository>-->
+    <!--<snapshotRepository>-->
+    <!--<id>local-snapshots</id>-->
+    <!--<name>Local Nexus snapshot repository</name>-->
+    <!--<url>http://localhost:9876/nexus/content/repositories/snapshots/</url>-->
+    <!--</snapshotRepository>-->
+    <!--<repository>-->
+    <!--<id>local-releases</id>-->
+    <!--<name>Local Nexus release repository</name>-->
+    <!--<url>http://localhost:9876/nexus/content/repositories/releases/</url>-->
+    <!--</repository>-->
     <!--</distributionManagement>-->
 
     <dependencies>
