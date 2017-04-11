@@ -28,7 +28,7 @@
     </organization>
     <licenses>
         <license>
-            <name>GNU LESSER GENERAL PUBLIC LICENSE version 3</name>
+            <name>MIT license</name>
             <distribution>jar</distribution>
         </license>
     </licenses>
