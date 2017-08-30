@@ -83,7 +83,7 @@ like modifying flags or deleting messages will not be possible.
 
 MIT License
 
-Copyright (c) 2015 Dejan Josifović
+Copyright (c) 2015 Dejan Josifović, the paranoid times
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

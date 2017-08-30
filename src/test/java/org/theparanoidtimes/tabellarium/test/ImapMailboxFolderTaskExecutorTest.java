@@ -1,13 +1,13 @@
-package com.paranoidtimes.tabellarium.test;
+package org.theparanoidtimes.tabellarium.test;
 
 import com.icegreen.greenmail.store.MailFolder;
 import com.icegreen.greenmail.user.GreenMailUser;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.ServerSetup;
-import com.paranoidtimes.tabellarium.api.EmailHandler;
-import com.paranoidtimes.tabellarium.api.MailboxTaskExecutor;
-import com.paranoidtimes.tabellarium.handlers.ChangeMessageFlagEmailHandler;
-import com.paranoidtimes.tabellarium.imap.ImapMailboxFolderTaskExecutor;
+import org.theparanoidtimes.tabellarium.api.EmailHandler;
+import org.theparanoidtimes.tabellarium.api.MailboxTaskExecutor;
+import org.theparanoidtimes.tabellarium.handlers.ChangeMessageFlagEmailHandler;
+import org.theparanoidtimes.tabellarium.imap.ImapMailboxFolderTaskExecutor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

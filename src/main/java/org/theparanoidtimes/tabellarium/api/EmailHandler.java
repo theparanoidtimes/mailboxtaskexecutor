@@ -1,4 +1,4 @@
-package com.paranoidtimes.tabellarium.api;
+package org.theparanoidtimes.tabellarium.api;
 
 import javax.mail.Message;
 

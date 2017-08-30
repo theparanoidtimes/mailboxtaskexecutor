@@ -1,4 +1,4 @@
 /**
  * Tabellarium IMAP implementation package.
  */
-package com.paranoidtimes.tabellarium.imap;
+package org.theparanoidtimes.tabellarium.imap;

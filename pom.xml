@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.paranoidtimes</groupId>
+    <groupId>org.theparanoidtimes</groupId>
     <artifactId>tabellarium</artifactId>
     <version>0.3-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -20,11 +20,12 @@
             <id>28</id>
             <name>Dejan Josifovic</name>
             <email>www.paranoidtimes@gmail.com</email>
-            <organization>theparanoidtimes.com</organization>
+            <organization>theparanoidtimes.org</organization>
+            <url>http://theparanoidtimes.org</url>
         </developer>
     </developers>
     <organization>
-        <name>theparanoidtimes.com</name>
+        <name>theparanoidtimes.org</name>
     </organization>
     <licenses>
         <license>
@@ -116,19 +117,6 @@
             </resource>
         </resources>
     </build>
-
-    <!--<distributionManagement>-->
-    <!--<snapshotRepository>-->
-    <!--<id>local-snapshots</id>-->
-    <!--<name>Local Nexus snapshot repository</name>-->
-    <!--<url>http://localhost:9876/nexus/content/repositories/snapshots/</url>-->
-    <!--</snapshotRepository>-->
-    <!--<repository>-->
-    <!--<id>local-releases</id>-->
-    <!--<name>Local Nexus release repository</name>-->
-    <!--<url>http://localhost:9876/nexus/content/repositories/releases/</url>-->
-    <!--</repository>-->
-    <!--</distributionManagement>-->
 
     <dependencies>
         <dependency>

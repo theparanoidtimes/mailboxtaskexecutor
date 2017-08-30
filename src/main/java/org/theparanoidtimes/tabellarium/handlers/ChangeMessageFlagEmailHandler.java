@@ -1,6 +1,6 @@
-package com.paranoidtimes.tabellarium.handlers;
+package org.theparanoidtimes.tabellarium.handlers;
 
-import com.paranoidtimes.tabellarium.api.EmailHandler;
+import org.theparanoidtimes.tabellarium.api.EmailHandler;
 
 import javax.mail.Flags;
 import javax.mail.Message;

@@ -1,8 +1,8 @@
-package com.paranoidtimes.tabellarium.imap;
+package org.theparanoidtimes.tabellarium.imap;
 
-import com.paranoidtimes.tabellarium.api.EmailHandler;
-import com.paranoidtimes.tabellarium.api.MailBoxTaskExecutorException;
-import com.paranoidtimes.tabellarium.api.MailboxTaskExecutor;
+import org.theparanoidtimes.tabellarium.api.EmailHandler;
+import org.theparanoidtimes.tabellarium.api.MailBoxTaskExecutorException;
+import org.theparanoidtimes.tabellarium.api.MailboxTaskExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
