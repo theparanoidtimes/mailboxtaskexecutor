@@ -1,5 +1,7 @@
 # Tabellarium #
 
+[![Build Status](https://travis-ci.org/theparanoidtimes/tabellarium.svg?branch=master)](https://travis-ci.org/theparanoidtimes/tabellarium)
+
 Version: 0.2.
 
 *tabellarium* executes task against e-mail messages in one mailbox folder.
