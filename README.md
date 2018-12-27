@@ -4,7 +4,7 @@
 
 Version: 0.2.
 
-*tabellarium* executes task against e-mail messages in one mailbox folder.
+*tabellarium* executes tasks against e-mail messages in one mailbox folder.
 
 Current API supports three methods which are implemented for IMAP
 protocol in `ImapMailboxFolderTaskExecutor`. Each task is done only in
